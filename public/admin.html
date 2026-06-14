@@ -36,7 +36,17 @@ const API_BASE =
 
 async function load() {
   try {
-    const res = await fetch(`${API_BASE}/admin/data`);
+    const res = await fetch("/track", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    step: stepNumber,
+    stepName,
+    completed: true
+  })
+});
     const data = await res.json();
 
     const total = data.length;
