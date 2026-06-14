@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Admin Panel - Statystyki</title>
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  padding: 2rem;
+}
+
+.card {
+  background: #1e293b;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 10px;
+}
+
+h1 { color: #f59e0b; }
+.small { color: #94a3b8; font-size: 12px; }
+</style>
+</head>
+<body>
+
+<h1>📊 Panel statystyk formularza</h1>
+
+<div id="stats"></div>
+
+<script>
+async function load() {
+  const res = await fetch("/admin/data");
+  const data = await res.json();
+
+  const total = data.length;
+
+  const completed = data.filter(e => e.completed).length;
+
+  const steps = {};
+
+  data.forEach(e => {
+    if (!steps[e.stepName]) steps[e.stepName] = 0;
+    steps[e.stepName]++;
+  });
+
+  document.getElementById("stats").innerHTML = `
+    <div class="card">
+      <h2>Podsumowanie</h2>
+      <p>Łącznie eventów: ${total}</p>
+      <p>Ukończenia: ${completed}</p>
+    </div>
+
+    <div class="card">
+      <h2>Etapy formularza</h2>
+      ${Object.entries(steps).map(([k,v]) =>
+        `<p>${k}: ${v}</p>`
+      ).join("")}
+    </div>
+
+    <div class="card">
+      <h2>Ostatnie zdarzenia</h2>
+      ${data.slice(-10).reverse().map(e => `
+        <div class="small">
+          ${e.time} | step ${e.step} - ${e.stepName} | completed: ${e.completed}
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
+load();
+setInterval(load, 3000);
+</script>
+
+</body>
+</html>
