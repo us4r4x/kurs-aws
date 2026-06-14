@@ -1,0 +1,35 @@
+<h1>Statystyki</h1>
+
+<div id="stats"></div>
+
+<script>
+
+async function load() {
+
+    const res =
+        await fetch(
+            "https://twojadomena.pl:3001/stats"
+        );
+
+    const data = await res.json();
+
+    document.getElementById(
+        "stats"
+    ).innerHTML = `
+
+    <h2>Rozpoczęło: ${data.started}</h2>
+    <h2>Ukończyło: ${data.completed}</h2>
+
+    <pre>
+${JSON.stringify(
+    data.sessions,
+    null,
+    2
+)}
+    </pre>
+    `;
+}
+
+load();
+
+</script>
