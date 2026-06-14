@@ -1,0 +1,2 @@
+# kurs-aws
+fishtask
