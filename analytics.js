@@ -3,14 +3,23 @@ const path = require("path");
 
 const app = express();
 
+// middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// frontend static
 app.use(express.static(path.join(__dirname, "public")));
 
-// storage (MVP)
+// in-memory storage (MVP analytics)
 let events = [];
 
-// tracking
+/**
+ * TRACKING ENDPOINT
+ * odbiera eventy z formularza
+ */
 app.post("/track", (req, res) => {
+  console.log("TRACK:", req.body);
+
   events.push({
     ...req.body,
     time: new Date().toISOString()
@@ -19,12 +28,16 @@ app.post("/track", (req, res) => {
   res.json({ ok: true });
 });
 
-// admin API
+/**
+ * ADMIN DATA API
+ */
 app.get("/admin/data", (req, res) => {
   res.json(events);
 });
 
-// pages
+/**
+ * FRONTEND ROUTES
+ */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -33,8 +46,20 @@ app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
-const PORT = process.env.PORT || 3000;
+/**
+ * HEALTH CHECK (debug na Render)
+ */
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    events: events.length
+  });
+});
 
+/**
+ * START SERVER
+ */
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log("running on", PORT);
+  console.log("Server running on port", PORT);
 });
